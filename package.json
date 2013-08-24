@@ -1,0 +1,11 @@
+{
+  "name": "test-task",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rysenko/test-task.git"
+  },
+  "devDependencies": {
+    "mocha": "1.12.0"
+  }
+}
