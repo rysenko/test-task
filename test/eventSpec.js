@@ -68,6 +68,13 @@ var runner = function (numContexts, numEvents, numHandlers, done) {
             });
         });
     }
+    // unbinding
+    events.shuffle();
+    managers.forEach(function (manager) {
+        events.forEach(function (event) {
+            manager.unbind(event);
+        });
+    });
 };
 
 describe('event', function () {
