@@ -4,7 +4,8 @@ var EventManager = (function () {
         this.bindings = {};
     }
     EventManager.prototype.bind = function (eventName, handler) {
-        if (!this.bindings[eventName]) this.bindings[eventName] = []
+        if (!this.bindings[eventName])
+            this.bindings[eventName] = [];
         this.bindings[eventName].push(handler);
     };
     EventManager.prototype.unbind = function (eventName) {

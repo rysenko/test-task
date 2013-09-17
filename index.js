@@ -1,12 +1,14 @@
-(function ($) {
-    $.event.special.leftClick = {
+/*global jQuery, alert */
+(function () {
+    "use strict";
+    jQuery.event.special.leftClick = {
         setup: function (data, namespaces) {
             var elem = this, $elem = jQuery(elem);
             $elem.bind('click', jQuery.event.special.leftClick.handler);
         },
         teardown: function (namespaces) {
             var elem = this, $elem = jQuery(elem);
-            $elem.unbind('click', jQuery.event.special.leftClick.handler)
+            $elem.unbind('click', jQuery.event.special.leftClick.handler);
         },
         handler: function (event) {
             var elem = this, $elem = jQuery(elem);
@@ -21,13 +23,13 @@
         }
 
     };
-})(jQuery);
 
-$(function () {
-    $('#clickLeft').on('leftClick', function () {
-        alert('Clicked');
+    jQuery(function () {
+        jQuery('#clickLeft').on('leftClick', function () {
+            alert('Clicked');
+        });
+        jQuery('#clickAny').on('click', function () {
+            alert('Clicked');
+        });
     });
-    $('#clickAny').on('click', function () {
-        alert('Clicked');
-    });
-});
+}());

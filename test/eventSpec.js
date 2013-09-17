@@ -2,7 +2,7 @@ require('../utils/array');
 var EventManager = require('../event/eventManager');
 
 var Generator = (function () {
-    function Generator (numContexts, numEvents, numHandlers) {
+    function Generator(numContexts, numEvents, numHandlers) {
         this.numContexts = numContexts;
         this.numEvents = numEvents;
         this.numHandlers = numHandlers;
