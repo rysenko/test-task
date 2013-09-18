@@ -1,94 +1,102 @@
 require('../utils/array');
 var EventManager = require('../event/eventManager');
 
-var Generator = (function () {
-    function Generator(numContexts, numEvents, numHandlers) {
+var EventRunner = (function () {
+    function EventRunner(numContexts, numEvents, numHandlers) {
         this.numContexts = numContexts;
         this.numEvents = numEvents;
         this.numHandlers = numHandlers;
     }
-    Generator.prototype._arrayFactory = function (numEntries, entryFactory) {
+    EventRunner.prototype._arrayFactory = function (numEntries, entryFactory) {
         var result = [];
         for (var i = 0; i < numEntries; i++) {
             result.push(entryFactory(i));
         }
         return result.shuffle();
     };
-    Generator.prototype.getContexts = function () {
+    EventRunner.prototype._getContexts = function () {
         return this._arrayFactory(this.numContexts, function (i) {
             return {data: i};
         });
     };
-    Generator.prototype.getEvents = function () {
+    EventRunner.prototype._getEvents = function () {
         return this._arrayFactory(this.numEvents, function (i) {
             return 'event' + i;
         });
     };
-    Generator.prototype.getHandlers = function () {
+    EventRunner.prototype._getHandlers = function () {
         return this._arrayFactory(this.numHandlers, function (i) {
             return function (callback) {
                 callback(i);
             }
         });
     };
-    return Generator;
-})();
-
-var runner = function (numContexts, numEvents, numHandlers, done) {
-    var generator = new Generator(numContexts, numEvents, numHandlers);
-    var contexts = generator.getContexts();
-    var events = generator.getEvents();
-    var handlers = generator.getHandlers();
-    var timesToFire = 100;
-    var managers = [];
-    // binding
-    contexts.forEach(function (context) {
-        var manager = new EventManager(context);
-        events.forEach(function (event) {
-            handlers.forEach(function (handler) {
-                manager.bind(event, handler);
-            });
-        });
-        managers.push(manager);
-    });
-    var callbackCalled = 0;
-    var callbacksLimit = numContexts * numEvents * numHandlers * timesToFire;;
-    var callback = function () {
-        if (++callbackCalled == callbacksLimit) {
-            console.log('to ' + new Date().getMilliseconds());
-            done();
+    EventRunner.prototype._bind = function () {
+        this.contexts = this._getContexts();
+        this.events = this._getEvents();
+        this.handlers = this._getHandlers();
+        this.managers = [];
+        this.contexts.forEach(function (context) {
+            var manager = new EventManager(context);
+            this.events.forEach(function (event) {
+                this.handlers.forEach(function (handler) {
+                    manager.bind(event, handler);
+                }, this);
+            }, this);
+            this.managers.push(manager);
+        }, this);
+    };
+    EventRunner.prototype._fire = function (done) {
+        var timesToFire = 100;
+        var callbackCalled = 0;
+        var callbacksLimit = this.numContexts * this.numEvents * this.numHandlers * timesToFire;;
+        var callback = function () {
+            if (++callbackCalled == callbacksLimit) {
+                done();
+            }
         }
-    }
-    // firing
-    console.log('from ' + new Date().getMilliseconds());
-    for (var i = 0; i < timesToFire; i++) {
-        managers.forEach(function (manager) {
-            events.forEach(function (event) {
-                manager.fire(event, callback);
+        for (var i = 0; i < timesToFire; i++) {
+            this.managers.forEach(function (manager) {
+                this.events.forEach(function (event) {
+                    manager.fire(event, callback);
+                });
+            }, this);
+        }
+    };
+    EventRunner.prototype._unbind = function () {
+        this.events.shuffle();
+        this.managers.forEach(function (manager) {
+            this.events.forEach(function (event) {
+                manager.unbind(event);
             });
+        }, this);
+    };
+    EventRunner.prototype.run = function (done) {
+        this._bind();
+        var fromTime = +new Date();
+        var self = this;
+        this._fire(function () {
+            self._unbind();
+            console.log('Running (' + self.numContexts + ', ' + self.numEvents + ', ' + self.numHandlers  + ') took '
+                + (+new Date() - fromTime));
+            done();
         });
-    }
-    // unbinding
-    events.shuffle();
-    managers.forEach(function (manager) {
-        events.forEach(function (event) {
-            manager.unbind(event);
-        });
-    });
-};
+    };
+    return EventRunner;
+})();
 
 describe('event', function () {
     it('subscription and firing (10,10,10)', function (done) {
-        runner(10, 10, 10, done);
+        new EventRunner(10, 10, 10).run(done);
     });
     it('subscription and firing (100,10,10)', function (done) {
-        runner(100, 10, 10, done);
+        new EventRunner(100, 10, 10).run(done);
     });
     it('subscription and firing (10,100,10)', function (done) {
         this.timeout(60000);
-        runner(10, 100, 10, done);
+        new EventRunner(10, 100, 10).run(done);
     });
     it('subscription and firing (10,10,100)', function (done) {
-        runner(10, 10, 100, done);
+        new EventRunner(10, 10, 100).run(done);
     });
 });
