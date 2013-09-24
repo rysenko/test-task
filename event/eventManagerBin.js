@@ -1,5 +1,3 @@
-require('../utils/array');
-
 var EventManagerBin = (function () {
     function EventManagerBin(context) {
         this.context = context;
@@ -33,5 +31,3 @@ var EventManagerBin = (function () {
     };
     return EventManagerBin;
 })();
-
-module.exports = EventManagerBin;

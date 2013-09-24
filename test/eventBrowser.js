@@ -1,6 +1,3 @@
-require('../utils/array');
-var EventManager = require('../event/eventManager');
-
 var EventRunner = (function () {
     function EventRunner(numContexts, numEvents, numHandlers) {
         this.numContexts = numContexts;
@@ -86,17 +83,27 @@ var EventRunner = (function () {
 })();
 
 describe('event', function () {
-    it('subscription and firing (10,10,10)', function (done) {
-        new EventRunner(10, 10, 10).run(done);
+    // this is insane, but that's how jasmine works with async tests
+    var done = false;
+    beforeEach(function () {
+        function doStuff(){
+            new EventRunner(10, 10, 10).run(function () {
+                new EventRunner(100, 10, 10).run(function () {
+                    new EventRunner(10, 100, 10).run(function () {
+                        new EventRunner(10, 10, 100).run(function () {
+                            done = true;
+                        });
+                    });
+                });
+            });
+        }
+        runs(doStuff);
+        waitsFor(function(){
+            return done;
+        });
     });
-    it('subscription and firing (100,10,10)', function (done) {
-        new EventRunner(100, 10, 10).run(done);
-    });
-    it('subscription and firing (10,100,10)', function (done) {
-        this.timeout(60000);
-        new EventRunner(10, 100, 10).run(done);
-    });
-    it('subscription and firing (10,10,100)', function (done) {
-        new EventRunner(10, 10, 100).run(done);
+
+    it("did stuff", function(){
+        expect(done).toBe(true);
     });
 });

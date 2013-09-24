@@ -19,5 +19,3 @@ var EventManager = (function () {
     };
     return EventManager;
 })();
-
-module.exports = EventManager;
