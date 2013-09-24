@@ -1,4 +1,5 @@
 var throttle = require('../throttle');
+var assert = require('assert');
 
 describe('throttle', function () {
     it('basic', function (done) {
@@ -17,7 +18,7 @@ describe('throttle', function () {
             if (--timesToCall > 0) {
                 setTimeout(callThrottled, callTimeout);
             } else {
-                expect(timesCalled).toBe(Math.ceil(callTimeout * totalCalls / throttleTimeout));
+                assert.equal(Math.ceil(callTimeout * totalCalls / throttleTimeout), timesCalled);
                 done();
             }
         }

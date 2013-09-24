@@ -83,27 +83,16 @@ var EventRunner = (function () {
 })();
 
 describe('event', function () {
-    // this is insane, but that's how jasmine works with async tests
-    var done = false;
-    beforeEach(function () {
-        function runEvents(){
-            new EventRunner(10, 10, 10).run(function () {
-                new EventRunner(100, 10, 10).run(function () {
-                    new EventRunner(10, 100, 10).run(function () {
-                        new EventRunner(10, 10, 100).run(function () {
-                            done = true;
-                        });
-                    });
-                });
-            });
-        }
-        runs(runEvents);
-        waitsFor(function(){
-            return done;
-        });
+    it('subscription and firing (10,10,10)', function (done) {
+        new EventRunner(10, 10, 10).run(done);
     });
-
-    it("complete", function () {
-        expect(done).toBe(true);
+    it('subscription and firing (100,10,10)', function (done) {
+        new EventRunner(100, 10, 10).run(done);
+    });
+    it('subscription and firing (10,100,10)', function (done) {
+        new EventRunner(10, 100, 10).run(done);
+    });
+    it('subscription and firing (10,10,100)', function (done) {
+        new EventRunner(10, 10, 100).run(done);
     });
 });

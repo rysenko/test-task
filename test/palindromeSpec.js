@@ -1,19 +1,20 @@
+var assert = require('assert');
 var palindrome = require('../palindrome');
 
 describe('palindrome', function () {
     it('word', function () {
-        expect(palindrome('anna')).toBeTruthy();
+        assert(palindrome('anna'), 'Anna is a palindrome');
     });
     it('phrase with commas', function () {
-        expect(palindrome('Anne, I vote more cars race Rome to Vienna')).toBeTruthy();
+        assert(palindrome('Anne, I vote more cars race Rome to Vienna'), 'Rome to Vienna phrase is palindrome');
     });
     it('long phrase with dot', function () {
-        expect(palindrome('Are we not pure? “No sir!” Panama’s moody Noriega brags. “It is garbage!” Irony dooms a man; a prisoner up to new era.')).toBeTruthy();
+        assert(palindrome('Are we not pure? “No sir!” Panama’s moody Noriega brags. “It is garbage!” Irony dooms a man; a prisoner up to new era.'));
     });
     it('russian palindrome', function () {
-        expect('А роза упала на лапу Азора?').toBeTruthy();
+        assert(palindrome('А роза упала на лапу Азора?'));
     });
     it('not a palindrome', function () {
-        expect(palindrome('Amore, Roman.')).toBeFalsy();
+        assert(!palindrome('Amore, Roman.'), 'Amore, Roman isn\'t a palindrome');
     });
 });
