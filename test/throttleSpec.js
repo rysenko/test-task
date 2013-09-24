@@ -1,5 +1,4 @@
 var throttle = require('../throttle');
-var assert = require('assert');
 
 describe('throttle', function () {
     it('basic', function (done) {
