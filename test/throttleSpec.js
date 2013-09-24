@@ -18,7 +18,7 @@ describe('throttle', function () {
             if (--timesToCall > 0) {
                 setTimeout(callThrottled, callTimeout);
             } else {
-                assert.equal(Math.ceil(callTimeout * totalCalls / throttleTimeout), timesCalled);
+                expect(timesCalled).toBe(Math.ceil(callTimeout * totalCalls / throttleTimeout));
                 done();
             }
         }
