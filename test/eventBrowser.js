@@ -86,7 +86,7 @@ describe('event', function () {
     // this is insane, but that's how jasmine works with async tests
     var done = false;
     beforeEach(function () {
-        function doStuff(){
+        function runEvents(){
             new EventRunner(10, 10, 10).run(function () {
                 new EventRunner(100, 10, 10).run(function () {
                     new EventRunner(10, 100, 10).run(function () {
@@ -97,13 +97,13 @@ describe('event', function () {
                 });
             });
         }
-        runs(doStuff);
+        runs(runEvents);
         waitsFor(function(){
             return done;
         });
     });
 
-    it("did stuff", function(){
+    it("complete", function () {
         expect(done).toBe(true);
     });
 });
